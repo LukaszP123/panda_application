@@ -47,8 +47,11 @@ pipeline {
         }
         stage('Artifactory - app deployment') {
             steps {
-                withMaven(globalMavenSettingsConfig: 'null', jdk: 'null', maven: 'auto_maven', mavenSettingsConfig: 'fd3891fa-f958-499d-81a4-30e5b647208a') {
-                    sh "mvn deploy"
+                configFileProvider([configFile(fileId: 'fd3891fa-f958-499d-81a4-30e5b647208a', variable: 'MAVEN_GLOBAL_SETTINGS')]) {
+                    sh "mvn -gs $MAVEN_GLOBAL_SETTINGS deploy -Dmaven.test.skip=true -e"
+                }
+                //withMaven(globalMavenSettingsConfig: 'null', jdk: 'null', maven: 'auto_maven', mavenSettingsConfig: 'fd3891fa-f958-499d-81a4-30e5b647208a') {
+                //    sh "mvn deploy"
                 }
             }
         }
