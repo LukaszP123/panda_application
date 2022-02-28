@@ -52,12 +52,12 @@ pipeline {
                 }
             }
         }
-        post('Container stop') {
-            success { 
-                sh "docker stop $DOCKER_NAME"
-                deleteDir()
-            }
 
+    }
+    post('Container stop') {
+        success { 
+           sh "docker stop $DOCKER_NAME"
+                deleteDir()
         }
     }
 }
