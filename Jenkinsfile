@@ -30,7 +30,7 @@ pipeline {
         stage('Docker') {
             steps {
                 // Docker.
-                sh "mvn package -Pdocker"
+                sh "mvn package -Pdocker -Dmaven.test.skip=true"
             }
         }
         stage('Starting application') {
@@ -52,7 +52,7 @@ pipeline {
                 }
                 //withMaven(globalMavenSettingsConfig: 'null', jdk: 'null', maven: 'auto_maven', mavenSettingsConfig: 'fd3891fa-f958-499d-81a4-30e5b647208a') {
                 //    sh "mvn deploy"
-                }
+                //}
             }
         }
 
