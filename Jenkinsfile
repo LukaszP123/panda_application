@@ -42,12 +42,12 @@ pipeline {
                 sh "docker run -d -p 8080:8080 --name $DOCKER_NAME ${IMAGE}:${VERSION}"
             }
         }
-        stage('Selenium tests') {
-            steps {
-                // Selenium tests.
-                sh "mvn test -Pselenium"
-            }
-        }
+//        stage('Selenium tests') {
+//            steps {
+//                // Selenium tests.
+//                sh "mvn test -Pselenium"
+//            }
+//        }
         stage('Artifactory - app deployment') {
             steps {
                 configFileProvider([configFile(fileId: 'fd3891fa-f958-499d-81a4-30e5b647208a', variable: 'MAVEN_GLOBAL_SETTINGS')]) {
