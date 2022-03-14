@@ -5,6 +5,7 @@ pipeline {
         VERSION = readMavenPom().getVersion()
         //VERSION = sh script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true
         DOCKER_NAME = "pandaapp"
+        ANSIBLE = tool name: 'Ansible', type: 'com.cloudbees.jenkins.plugins.customtools.CustomTool'
     }
     agent {
         label 'Slave'
@@ -12,7 +13,9 @@ pipeline {
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
         maven "auto_maven"
+        terraform 'Terraform'
     }
+
 
     stages {
         stage('Clear running apps') {
