@@ -55,12 +55,54 @@ pipeline {
                 //}
             }
         }
-
+        stage('Run terraform'){
+            steps {
+                dir('infrastructure/terraform') {
+                    withCredentials([file(credentialsId: '9870e8db-d369-4ca0-8d96-0211d1e47a83', variable: 'terraformpanda')]) { sh "cp \$terraformpanda ../panda.pem" }
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS']]) {
+                    sh 'terrafom init && terraform apply -auto-approve -var-file panda.tfvars'
+                    }
+                }
+            }
+        }
+        stage('Copy Ansible role') {
+            steps {
+                sh 'sleep 180'
+                sh 'cp -r infrastructure/ansible/panda/ /etc/ansible/roles/'
+            }
+        }
+        stage('Run Ansible') {
+            steps {
+                dir('infrastructure/ansible') {
+                    sh 'chmod 600 ../panda.pem'
+                    sh 'ansible-playbook -i ./inventory playbook.yml -e ansible_python_interpreter=/usr/bin/python3'
+                }
+            }
+        }
+        stage('Remove environment') {
+            steps {
+                input 'Remove environment'
+                dir('infrastructure/terraform') { 
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS']]) {
+                        sh 'terraform destroy -auto-approve -var-file panda.tfvars'
+                    }
+                }
+            }
+        }
     }
     post('Container stop') {
         success { 
            sh "docker stop $DOCKER_NAME"
                 deleteDir()
+        }
+        failure {
+            dir('infrastructure/terraform') { 
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS']]) {
+                    sh 'terraform destroy -auto-approve -var-file panda.tfvars'
+                }
+            }
+            sh 'docker stop pandaapp'
+            deleteDir()
         }
     }
 }

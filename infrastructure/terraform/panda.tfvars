@@ -1,2 +1,2 @@
-aws_key_name = "panda"
+aws_key_name = "panda_kurs"
 ssh_key_path="../panda.pem"
