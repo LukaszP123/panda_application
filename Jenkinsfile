@@ -64,14 +64,16 @@ pipeline {
                 //}
             }
         }
-        stage('Run terraform'){
+        stage('Run terraform') {
             steps {
-                dir('infrastructure/terraform') {
-                    withCredentials([file(credentialsId: '9870e8db-d369-4ca0-8d96-0211d1e47a83', variable: 'terraformpanda')]) { sh "cp \$terraformpanda ../panda.pem" }
-                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS']]) {
-                    sh 'terrafom init && terraform apply -auto-approve -var-file panda.tfvars'
+                dir('infrastructure/terraform') { 
+                    withCredentials([file(credentialsId: '9870e8db-d369-4ca0-8d96-0211d1e47a83', variable: 'terraformpanda')]) {
+                        sh "cp \$terraformpanda ../panda.pem"
                     }
-                }
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS']]) {
+                        sh 'terraform init && terraform apply -auto-approve -var-file panda.tfvars'
+                    }
+                } 
             }
         }
         stage('Copy Ansible role') {
