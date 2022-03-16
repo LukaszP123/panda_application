@@ -18,6 +18,12 @@ pipeline {
 
 
     stages {
+	stage('Test installation') {
+            steps {
+                sh 'terraform --version'
+                sh 'ansible --version'
+            }
+        } 
         stage('Clear running apps') {
             steps {
                 // Clear old app
